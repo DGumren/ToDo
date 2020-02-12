@@ -1,11 +1,23 @@
 import React, { useState } from "react";
+import "../App.css";
 
 const Todos = () => {
   const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const deleteTodo = indexToDelete => {
+    setTodos(prevTodos => {
+      return prevTodos.filter((value, index) => {
+        return indexToDelete !== index;
+      });
+    });
+  };
   return (
     <div className="Todo">
-      <div className=" Todo2 input-group mb-3">
+      <h1 className="Font">
+        <b>My Todo List</b>
+      </h1>
+
+      <div className=" Todo2 input-group">
         <input
           type="text"
           className="form-control"
@@ -18,7 +30,7 @@ const Todos = () => {
         />
         <div className="input-group-append">
           <button
-            className="btn btn-outline-secondary"
+            className="btn btn-secondary"
             type="button"
             onClick={() => {
               setTodos(prevTodos => [...prevTodos, inputValue]);
@@ -29,10 +41,28 @@ const Todos = () => {
           </button>
         </div>
       </div>
-      <ul class="list-group">
+      <ul className="list-group">
         {todos.map((value, index) => {
-          console.log(value, index);
+          return (
+            <li
+              className="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center"
+              key={index}
+            >
+              {value}
+              <span
+                type="button"
+                onClick={() => {
+                  deleteTodo(index);
+                }}
+              >
+                X
+              </span>
+            </li>
+          );
         })}
+        <li className="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center">
+          {todos.length} items left
+        </li>
       </ul>
     </div>
   );
