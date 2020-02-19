@@ -1,9 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../App.css";
+const url = "https://assets.breatheco.de/apis/fake/todos/user/DGumren";
 
 const Todos = () => {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState(["eat", "sleep"]);
   const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    const fetchGetTodos = () => {
+      return fetch(url)
+        .then(res => res.json())
+        .then(res => {
+          return res;
+        })
+        .catch(err => console.log("error:" + err));
+    };
+    const fetchCreateUser = () => {
+      return fetch(url, {
+        method: "POST",
+        body: JSON.stringify([{}]),
+        headers: { "Content.Type": "application/json" }
+      })
+        .then(res => res.json())
+        .then(res => {
+          return res;
+        })
+        .catch(err => console.log("error:" + err));
+    };
+    const fetchUpdateToDos = () => {
+      const todosData = todos.map(todo => {
+        return { label: todo, done: false };
+      });
+      return fetch(url, {
+        method: "PUT",
+        body: JSON.stringify(todosData),
+        headers: { "Content.Type": "application/json" }
+      })
+        .then(res => res.json())
+        .then(res => {
+          return res;
+        })
+        .catch(err => console.log("error:" + err));
+    };
+    //  Making GET request, testing is user exits
+    fetchGetTodos().then(res => {
+      console.log("response: " + JSON.stringify(res));
+      // if user does not exist, we get a "msg"
+      if (res.msg) {
+        // If user does not exists, we'll create it
+        console.log("user does not exists");
+        fetchCreateUser().then(res => console.log(res));
+      } else {
+        console.log("user exists, here is response: " + JSON.stringify(res));
+      }
+    });
+  }, [todos]);
+
+  console.log(todos);
+
   const deleteTodo = indexToDelete => {
     setTodos(prevTodos => {
       return prevTodos.filter((value, index) => {
@@ -11,6 +65,7 @@ const Todos = () => {
       });
     });
   };
+
   return (
     <div className="Todo">
       <h1 className="Font">
