@@ -3,9 +3,9 @@ import "../App.css";
 const url = "https://assets.breatheco.de/apis/fake/todos/user/DGumren";
 
 const Todos = () => {
-  const [todos, setTodos] = useState(["eat", "sleep", "wake up"]);
-  const [init, setInit] = useState("true");
-  const [inputValue, setInputValue] = useState("true");
+  const [todos, setTodos] = useState([]);
+  const [init, setInit] = useState(true);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     const fetchGetTodos = () => {
@@ -19,8 +19,8 @@ const Todos = () => {
     const fetchCreateUser = () => {
       return fetch(url, {
         method: "POST",
-        body: JSON.stringify([{}]),
-        headers: { "Content.Type": "application/json" }
+        body: JSON.stringify([]),
+        headers: { "Content-Type": "application/json" }
       })
         .then(res => res.json())
         .then(res => {
@@ -35,7 +35,7 @@ const Todos = () => {
       return fetch(url, {
         method: "PUT",
         body: JSON.stringify(todosData),
-        headers: { "Content.Type": "application/json" }
+        headers: { "Content-Type": "application/json" }
       })
         .then(res => res.json())
         .then(res => {
@@ -51,14 +51,21 @@ const Todos = () => {
         if (res.msg) {
           // If user does not exists, we'll create it
           console.log("user does not exists");
-          fetchCreateUser().then(res => console.log(res));
+          fetchCreateUser().then(() => {
+            fetchGetTodos(url).then(res =>
+              setTodos(res.map(todo => todo.label))
+            );
+            setInit(false);
+          });
         } else {
-          console.log("user exists, here is response: " + JSON.stringify(res));
           setTodos(res.map(todo => todo.label));
+          setInit(false);
         }
       });
+    } else {
+      fetchUpdateToDos();
     }
-  }, [todos]);
+  }, [todos, init]);
 
   console.log(todos);
 
